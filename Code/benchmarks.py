@@ -1,11 +1,10 @@
 #!/bin/python3
 
 import pytest
-import os 
-import const
 import random
 from negotiation import negotiation, dynamicTrust, analysis, planning, execution
 from dataset_reader import getServicesFromDataset
+
 
 @pytest.mark.benchmark(
     group = "negotiation",
