@@ -1,10 +1,10 @@
-# Trust Negotiation in Dynamic Service-Based Applications
+# A Trust Management System for Collaborative, Federated Service-Based Applications
 
 [![CC BY 4.0][cc-by-shield]][cc-by]
 
 [**Nicola Bena**](https://homes.di.unimi.it/bena), [**Genoveva Vargas-Solar**](http://vargas-solar.com/), [**Nadia Bennani**](https://liris.cnrs.fr/en/member-page/nadia-bennani), [**Nicolò Grecchi**](https://www.linkedin.com/in/nicol%C3%B2-grecchi-6b094123b/) [**Chirine Ghedira-Guegan**](https://liris.cnrs.fr/en/member-page/chirine-ghedira-guega), [**Claudio A. Ardagna**](https://homes.di.unimi.it/ardagna)
 
-> In the last two decades, the long-standing promise of service-based software has been realized, transitioning from traditional client-server architecture to distributed, service-based systems. Applications built upon these systems dynamically compose services from multiple, often unknown, parties to exchange vast amounts of data and collaboratively define and optimize new business processes (e.g., federated learning in the medical field). As these applications become increasingly complex and new regulations emerge, participating services must understand each other's functional and non-functional behavior before joining the application, ensuring that their requirements are met. This scenario is reviving the trust issue that emerged with the advent of the commercial Internet in the 90s. Contrary to the past, trust must now empower collaborative, dynamic, open distributed applications rather than static, client-server transactions. This paper proposes a Trust Management System (TMS) that addresses the specific needs of distributed service-based applications. It implements a trust negotiation protocol that supports partial negotiation to maximize negotiation success and ensures trust establishment over time and across service changes. The proposed approach is applied in the context of a Federated Learning (FL) composite application that studies the long-term effects of COVID-19 and is experimentally evaluated in a comprehensive simulated environment.
+> In the last two decades, the long-standing promise of service-based software has been realized, transitioning from traditional client-server architecture to distributed, service-based systems. Applications built upon these systems dynamically compose services from multiple, often unknown, parties to share and process vast amounts of data and collaboratively define and optimize new business processes. More recently, these applications have been evolving toward collaborative, federated architectures (e.g., federated learning in the medical field), where each component service delivers the same core functionality but differs in the data it contributes and in the supported non-functional behavior (e.g., security, privacy). As these applications become increasingly complex and new regulations emerge, participating services must understand each other's non-functional behavior before joining the application, ensuring that their trust requirements are met. This scenario is reviving the trust issue that emerged with the advent of the commercial Internet in the 90s. Contrary to the past, trust must now empower dynamic, open applications rather than static, client-server operations. This paper proposes a Trust Management System (TMS) that addresses the specific needs of collaborative, federated service-based applications. It implements a trust negotiation protocol that supports partial negotiation to maximize negotiation success and ensures trust establishment over time and across service changes. The proposed approach is demonstrated through a Federated Learning (FL) collaborative application that studies the long-term effects of COVID-19 and is experimentally evaluated in a comprehensive simulated environment.
 
 ## Overview
 
@@ -511,15 +511,10 @@ Coming soon.
 
 This work was supported by:
 
-- project BA-PHERD, funded by the European Union -- NextGenerationEU, under the National Recovery and Resilience Plan (NRRP) Mission 4 Component 2 Investment Line 1.1: "Fondo Bando PRIN 2022" (CUP G53D23002910006)
-- MUSA -- Multilayered Urban Sustainability Action -- project, funded by the European Union -- NextGenerationEU, under the National Recovery and Resilience Plan (NRRP) Mission 4 Component 2 Investment Line 1.5: Strengthening of research structures and creation of R&D "innovation ecosystems", set up of "territorial leaders in R&D" (CUP G43C22001370007, Code ECS00000037)
-- project SERICS (PE00000014) under the NRRP MUR program funded by the EU - NGEU
-- project SOV-EDGE-HUB funded by Università degli Studi di Milano -- PSR 2021/2022 -- GSA -- Linea 6
-- Università degli Studi di Milano under the program ``Piano di Sostegno alla Ricerca''
+- Piano di sostegno alla ricerca, Università degli Studi di Milano
+- PSR 2025 -- Linea 8 -- Sottomisura A, Università degli Studi di Milano
 - SUMMIT program Pack Ambition of the Auvergne Rhône Alpes region
 - FRIENDLY of the LIRIS lab
-
-Views and opinions expressed are however those of the authors only and do not necessarily reflect those of the European Union or the Italian MUR. Neither the European Union nor the Italian MUR can be held responsible for them.
 
 ## License
 
