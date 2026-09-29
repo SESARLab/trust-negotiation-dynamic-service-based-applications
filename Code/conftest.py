@@ -3,5 +3,4 @@
 import pytest
 
 def pytest_addoption(parser):
-    parser.addoption("--setting", action = "store", default = "None")
-    parser.addoption("--path", action = "store", default = "None")
+    parser.addoption('--dataset-dir', action='store', default=None)

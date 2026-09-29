@@ -1,91 +1,133 @@
-#!/bin/python3
-
-import subprocess
-import const
 import json
-import os
-import pandas as pd
+import subprocess
+from pathlib import Path
+
+import joblib
+import polars as pl
+
+from settings_data import get_settings
 
 
-def getExpSettings(settings: list[dict]) -> list[str]:
+def run_all_performance(dataset_dir: Path, output_dir: Path, n_jobs: int = -1):
     """
-        Function to get all the settings on which perform benchmark
+    Main entry point for performance test
     """
+    jobs = []
+    for setting in get_settings():
+        # work only on these settings for the performance.
+        if setting.name.startswith('G2.3') or setting.name.startswith('G4.2'):
+            datasets = get_dataset_paths(dataset_dir, setting.name)
+            for dataset in datasets:
+                # argument of the nested function
+                jobs.append((dataset, setting.name))
 
-    sett = []
+    performance_data = joblib.Parallel(n_jobs=n_jobs, verbose=1, backend='loky')(
+        joblib.delayed(run_single_performance_benchmark)(
+            dataset=dataset,
+            setting_name=setting_name,
+            output_dir=output_dir
+        )
+        for dataset, setting_name in jobs
+    )
+    # create and sort the dataframe.
+    performance_df = pl.DataFrame(performance_data).sort(['setting_name', 'n_services', 'n_trust_attributes'])
+    if output_dir:
+        performance_df.write_csv(output_dir / 'performance.csv')
 
-    for n in const.SERVICES_NUM:
-        for t in const.SDS_NUM:
-            for s in const.getSettings():
-                # get sd bad and strict reqs or tp good and loose reqs
-                if ((s['SD_P'][0] == 0.5 and s['REQS_P']['REQUIREMENTS'][1] == 2 / 3) or (
-                        s['SD_P'][2] == 0.5 and s['REQS_P']['REQUIREMENTS'][0] == 2 / 3)):
-                    sett.append(f"{s['SETTING_NAME']}_{n}_{t}")
 
-    return sett
-
-
-def exportPerformanceResult(destDir):
+def run_single_performance_benchmark(dataset: Path, setting_name: str, output_dir: Path) -> dict:
     """
-        Function to launch benchmark and export results 
+    Nested function to exploit parallelism
     """
+    # the path of a dataset is: quality/snapshots/setting_name/services_X_attributes_Y/run_0/services.json
+    # the -3 part gives the number of services and attributes which is what we need to name
+    # the raw output file.
+    # we also need to create the output directory, because under performance/
+    # (already created by the caller) we don't have other sub-dirs:
+    # we want to create performance/setting_name/services_X_attributes_Y.json
+    # so: build the path
+    output_sub_dir = output_dir / setting_name
+    output_sub_dir.mkdir(parents=True, exist_ok=True)
+    # and define the name of the output file.
+    raw_output_file = output_sub_dir / f'{dataset.parts[-3]}.json'
+    # run!
+    try:
+        subprocess.run(
+            [
+                'pytest',
+                'benchmarks.py',
+                '--benchmark-time-unit=s',
+                '--dataset-dir',
+                str(dataset),
+                f'--benchmark-json={raw_output_file}',
+            ],
+            check=True,
+            # need to really set the std streams otherwise the subprocesses fail.
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            f'Performance benchmark failed for:\n'
+            f'  setting: {setting_name}\n'
+            f'  dataset: {dataset}\n'
+            f'  return code: {e.returncode}\n\n'
+            f'================ STDOUT ================\n'
+            f'{e.stdout}\n'
+            f'================ STDERR ================\n'
+            f'{e.stderr}\n'
+        ) from e
 
-    negotiation_dataframes = []
-    dynamic_service_dataframes = []
-    indexes = []
+    # we have one result for each setting, |services|, |trust attributes|
+    with open(raw_output_file) as f:
+        data = json.load(f)
+    # these are always the same, regardless the type of function we're benchmarking.
+    obj = {
+        'setting_name': data['benchmarks'][0]['extra_info']['setting_name'],
+        'n_services': data['benchmarks'][0]['extra_info']['n_services'],
+        'n_trust_attributes': data['benchmarks'][0]['extra_info']['n_trust_attributes'],
+        'execution_id': data['benchmarks'][0]['extra_info']['execution_id'],
+    }
 
-    for setting in getExpSettings(const.getSettings()):
-        subprocess.run(['pytest', 'benchmarks.py', '--benchmark-time-unit=s',
-                        '--path', destDir, '--setting', setting,
-                        f'--benchmark-json={destDir}/.tmp.json'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    for benchmark in data['benchmarks']:
+        if benchmark['group'] == 'negotiation':
+            fill_key = 'negotiation'
+        elif benchmark['group'] == 'dynamic_trust' and benchmark['name'] == 'test_dynamic_trust':
+            fill_key = 'dynamic_trust'
+        elif benchmark['group'] == 'dynamic_trust' and benchmark['name'] == 'test_dynamic_analysis':
+            fill_key = 'dynamic_analysis'
+        elif benchmark['group'] == 'dynamic_trust' and benchmark['name'] == 'test_dynamic_planning':
+            fill_key = 'dynamic_planning'
+        else:
+            raise Exception(f'Unknown benchmark group: {benchmark["group"]}')
+        obj[f'{fill_key}_avg'] = benchmark['stats']['mean']
+        obj[f'{fill_key}_std'] = benchmark['stats']['stddev']
+        obj[f'{fill_key}_median'] = benchmark['stats']['median']
 
-        f = open(f'{destDir}/.tmp.json')
-        tmpData = json.load(f)
+    return obj
 
-        negotiation_data = {
-            'SERVICES': setting.split('_')[1],
-            'SERVICE_DATA': setting.split('_')[2],
-            'MIN': tmpData['benchmarks'][0]['stats']['min'],
-            'MAX': tmpData['benchmarks'][0]['stats']['max'],
-            'AVG': tmpData['benchmarks'][0]['stats']['mean'],
-            'STD': tmpData['benchmarks'][0]['stats']['stddev']
-        }
 
-        dynamicTrust_data = {
-            'SERVICES': setting.split('_')[1],
-            'SERVICE_DATA': setting.split('_')[2],
-            'MIN_ALL': tmpData['benchmarks'][1]['stats']['min'],
-            'MIN_ANALYSIS': tmpData['benchmarks'][2]['stats']['min'],
-            'MIN_PLANNING': tmpData['benchmarks'][3]['stats']['min'],
-            'MIN_EXECUTION': tmpData['benchmarks'][4]['stats']['min'],
-            'MAX_ALL': tmpData['benchmarks'][1]['stats']['max'],
-            'MAX_ANALYSIS': tmpData['benchmarks'][2]['stats']['max'],
-            'MAX_PLANNING': tmpData['benchmarks'][3]['stats']['max'],
-            'MAX_EXECUTION': tmpData['benchmarks'][4]['stats']['max'],
-            'AVG_ALL': tmpData['benchmarks'][1]['stats']['mean'],
-            'AVG_ANALYSIS': tmpData['benchmarks'][2]['stats']['mean'],
-            'AVG_PLANNING': tmpData['benchmarks'][3]['stats']['mean'],
-            'AVG_EXECUTION': tmpData['benchmarks'][4]['stats']['mean'],
-            'STD_ALL': tmpData['benchmarks'][1]['stats']['stddev'],
-            'STD_ANALYSIS': tmpData['benchmarks'][2]['stats']['stddev'],
-            'STD_PLANNING': tmpData['benchmarks'][3]['stats']['stddev'],
-            'STD_EXECUTION': tmpData['benchmarks'][4]['stats']['stddev']
-        }
+def get_dataset_paths(base_dir: Path, setting_name: str) -> list[Path]:
+    """
+    Return list of paths to datasets given this setting.
 
-        indexes.append(setting.split('_')[0])
-
-        negotiation_dataframes.append(negotiation_data)
-        dynamic_service_dataframes.append(dynamicTrust_data)
-
-        f.close()
-
-    h_df = pd.DataFrame(negotiation_dataframes)
-    cm_df = pd.DataFrame(dynamic_service_dataframes)
-
-    h_df.index = indexes
-    cm_df.index = indexes
-
-    h_df.to_csv(f"{destDir}/performance/negotiation/results.csv")
-    cm_df.to_csv(f"{destDir}/performance/dynamic_trust/results.csv")
-
-    os.remove(f'{destDir}/.tmp.json')
+    Under each setting, we have different datasets varying the number of services
+    and trust attributes, and then different versions one for each run. We pick
+    *one* dataset for each combination of |services| and |trust attributes|.
+    """
+    paths = []
+    # main_output_dir/snapshots/setting_name is the directory where we save stuff.
+    # so here we determine the main starting point, depending on whether base_dir
+    # already contains the snapshot or not.
+    different_srv_base = base_dir / 'snapshots' / setting_name \
+        if base_dir.parts[-1] != 'snapshots' \
+        else base_dir / setting_name
+    # now here, we have as children directories like services_10_attributes_100/run_1
+    children = different_srv_base.iterdir()
+    for child in children:
+        if child.is_dir():
+            # we use sorted to ensure deterministic extraction.
+            # and we are getting here 'run_0', basically.
+            execution = sorted(list(filter(lambda x: x.is_dir(), child.iterdir())))[0]
+            # add the file name.
+            paths.append(execution / 'services.json')
+    return paths

@@ -1,0 +1,1439 @@
+{
+  "metadata": {
+    "setting_name": "G2.2.1",
+    "n_services": 100,
+    "n_trust_attributes": 50,
+    "execution_id": 2
+  },
+  "events": [
+    {
+      "tick": 2,
+      "changed_service": "s52",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 17,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 28,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 30,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 32,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 42,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 49,
+          "new_value": 0
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 9,
+      "changed_service": "s42",
+      "changes": [
+        {
+          "attribute_index": 9,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 10,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 17,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 19,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 24,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 26,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 35,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 43,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 49,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 11,
+      "changed_service": "s17",
+      "changes": [
+        {
+          "attribute_index": 1,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 7,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 9,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 15,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 19,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 20,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 27,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 30,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 31,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 32,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 36,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 0
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 13,
+      "changed_service": "s39",
+      "changes": [
+        {
+          "attribute_index": 1,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 17,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 22,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 31,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 33,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 40,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 43,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 46,
+          "new_value": 0
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 21,
+      "changed_service": "s57",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 11,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 13,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 22,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 30,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 32,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 39,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 44,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 46,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 49,
+          "new_value": 0
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 22,
+      "changed_service": "s66",
+      "changes": [
+        {
+          "attribute_index": 3,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 9,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 10,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 12,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 22,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 35,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 42,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 24,
+      "changed_service": "s70",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 5,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 7,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 10,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 21,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 25,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 33,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 37,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 38,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 40,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 45,
+          "new_value": 0
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 27,
+      "changed_service": "s63",
+      "changes": [
+        {
+          "attribute_index": 5,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 10,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 13,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 18,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 23,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 25,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 26,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 27,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 28,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 31,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 33,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 36,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 38,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 39,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 40,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 2
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 37,
+      "changed_service": "s60",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 9,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 12,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 18,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 23,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 25,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 26,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 30,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 32,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 44,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 45,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 46,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 41,
+      "changed_service": "s5",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 1,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 6,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 11,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 13,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 14,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 18,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 24,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 25,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 28,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 38,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 42,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 45,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 47,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 47,
+      "changed_service": "s75",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 7,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 8,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 18,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 24,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 25,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 28,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 41,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 47,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 49,
+          "new_value": 2
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 51,
+      "changed_service": "s68",
+      "changes": [
+        {
+          "attribute_index": 4,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 6,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 8,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 10,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 14,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 17,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 23,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 35,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 44,
+          "new_value": 2
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 54,
+      "changed_service": "s8",
+      "changes": [
+        {
+          "attribute_index": 5,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 8,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 11,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 12,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 15,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 17,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 19,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 22,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 39,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 47,
+          "new_value": 2
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 62,
+      "changed_service": "s22",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 4,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 7,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 9,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 18,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 22,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 35,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 37,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 38,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 41,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 45,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 66,
+      "changed_service": "s84",
+      "changes": [
+        {
+          "attribute_index": 7,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 8,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 10,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 17,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 24,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 33,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 38,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 39,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 41,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 44,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 45,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 46,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 2
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 70,
+      "changed_service": "s66",
+      "changes": [
+        {
+          "attribute_index": 2,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 3,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 4,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 10,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 11,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 17,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 20,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 22,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 34,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 35,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 37,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 39,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 40,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 46,
+          "new_value": 2
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 76,
+      "changed_service": "s74",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 7,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 8,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 10,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 13,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 18,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 19,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 24,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 27,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 36,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 37,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 42,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 81,
+      "changed_service": "s91",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 5,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 6,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 13,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 15,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 23,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 27,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 28,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 31,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 34,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 83,
+      "changed_service": "s2",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 11,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 13,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 15,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 21,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 22,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 30,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 42,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 49,
+          "new_value": 2
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 87,
+      "changed_service": "s41",
+      "changes": [
+        {
+          "attribute_index": 1,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 4,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 6,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 12,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 20,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 22,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 23,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 25,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 35,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 37,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 39,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 44,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 47,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 88,
+      "changed_service": "s20",
+      "changes": [
+        {
+          "attribute_index": 1,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 4,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 6,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 9,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 14,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 15,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 19,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 21,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 23,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 24,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 26,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 31,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 32,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 33,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 34,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 36,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 37,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 41,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 42,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 44,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 45,
+          "new_value": 0
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 95,
+      "changed_service": "s67",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 2,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 6,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 8,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 24,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 29,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 35,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 38,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 42,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 43,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 44,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 48,
+          "new_value": 1
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    },
+    {
+      "tick": 99,
+      "changed_service": "s70",
+      "changes": [
+        {
+          "attribute_index": 0,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 5,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 15,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 16,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 17,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 24,
+          "new_value": 0
+        },
+        {
+          "attribute_index": 27,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 33,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 37,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 39,
+          "new_value": 2
+        },
+        {
+          "attribute_index": 44,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 47,
+          "new_value": 1
+        },
+        {
+          "attribute_index": 49,
+          "new_value": 2
+        }
+      ],
+      "relevant": false,
+      "application_stability": 1,
+      "service_stability": 1,
+      "action_stability": 1,
+      "planning": {}
+    }
+  ]
+}

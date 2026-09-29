@@ -1,72 +1,82 @@
 import dataclasses
+from typing import Any
 
-import negotiation as neg_base
-import negotiation_debug as neg_debug
+from model import Service, ChangeSet
+from trust_dynamic import dynamic_trust
+from trust_negotiation import negotiation
 
 
-def execute_walkthrough(services, changes):
-    results = {}
+def get_changed_service_name_from(services: list[Service], name: str) -> int:
+    for i, service in enumerate(services):
+        if service.name == name:
+            return i
+    raise ValueError(f'Service {name} not found')
 
-    system = neg_base.negotiation(services, returnAll=True)
 
-    results['in system'] = []
-    results['not in system'] = []
+def execute_walkthrough(services: list[Service], changes: list[tuple[str, ChangeSet]]) -> dict[str, Any]:
+    result = {}
+    change_objs = []
 
-    for e in system:
-        if e[2]:
-            results['in system'].append({'name': e[0]['name'], 'satisfaction': e[1]})
-        else:
-            results['not in system'].append({'name': e[0]['name'], 'satisfaction': e[1]})
+    # 1. do the negotiation
+    negotiation_result = negotiation(services)
+    # and report the included/excluded services.
+    result['included'] = [{'name': s.name, 'trust_value': s.trust_value, 'action': s.action} for s in negotiation_result.included]
+    result['excluded'] = [{'name': s.name, 'trust_value': s.trust_value, 'action': s.action} for s in negotiation_result.excluded]
+    # result['len(included)'] = len(result['included'])
+    # result['len(excluded)'] = len(result['excluded'])
 
-    results['number of services in system'] = len(results['in system'])
-    results['number of services not in system'] = len(results['not in system'])
+    current_system = negotiation_result.included
 
-    # holds a copy of the system used for dynamic trust.
-    tmp_system = []
-    results['changes'] = []
-
-    # make a copy of the system in tmp_system.
-    for service in system:
-        if service[2]:
-            tmp_system.append([service[0], service[1]])
-
-    # for each change...
-    for i, change in enumerate(changes):
-        # a list of tuples
-        # each element of the tuple contains (new value, old value)
-        oldVal = []
-
-        for service in tmp_system:
-            # grab the service that is changing according to the name
-            if service[0]['name'] == change[0]:
-                for c in change[1]:
-                    oldVal.append((c[0], service[0][c[0]]))
-
-                service[0]['change'] = change[1]
-
-        # apply dynamic trust.
-        afterChange = neg_debug.dynamicTrust(tmp_system)
-
-        changeRes = {'index': i}
-
-        changeRes['change'] = {
-            'changed service': change[0],
-            'changed service data': [],
-            'reason_analysis': dataclasses.asdict(afterChange[3]),
-            'reason_planning': dataclasses.asdict(afterChange[4])
+    # now, apply the change.
+    for change_id, (changed_service_name, change_set) in enumerate(changes):
+        dynamic_trust_result = dynamic_trust(
+            system=current_system,
+            changed_service_index=get_changed_service_name_from(current_system, changed_service_name),
+            change_set=change_set,
+            debug=True,
+        )
+        # begin to add info.
+        change_obj: dict[str, Any] = { # forced type to avoid issues with the annoying type-checker.
+            'index': change_id,
+            'changed': {
+                'service_name': changed_service_name,
+                'trust_attributes': [
+                    {
+                        'attribute_index': change.index,
+                        'new_value': change.new_value
+                    } for change in change_set.changes
+                ],
+            },
+            'relevant': dynamic_trust_result.relevant,
         }
+        # now, here, the change may be irrelevant.
+        if dynamic_trust_result.relevant:
+            # need to add this because debug_planning is normally None except when explicitly specified.
+            # (it's just for type-checking)
+            assert dynamic_trust_result.debug_planning is not None
+            assert dynamic_trust_result.debug_planning.s_keep is not None
+            assert dynamic_trust_result.debug_planning.s_eviction is not None
+            change_obj.update({
+                'metrics': {
+                    'application_stability': dynamic_trust_result.application_stability,
+                    'service_stability': dynamic_trust_result.service_stability,
+                    'action_stability': dynamic_trust_result.action_stability,
+                },
+                'planning': {
+                    'decision': dynamic_trust_result.debug_planning.decision,
+                    'scenario_keep': dataclasses.asdict(dynamic_trust_result.debug_planning.s_keep),
+                    'scenario_evict': dataclasses.asdict(dynamic_trust_result.debug_planning.s_eviction),
+                },
+                'after_change': {
+                    'included': [{'name': s.name, 'trust_value': s.trust_value, 'action': s.action}
+                                 for s in dynamic_trust_result.debug_planning.simulation.included],
+                    'excluded': [{'name': s.name, 'trust_value': s.trust_value, 'action': s.action}
+                                 for s in dynamic_trust_result.debug_planning.simulation.excluded],
+                }
+            })
 
-        for c in change[1]:
-            changeRes['change']['changed service data'].append({c[0]: c[1]})
+            current_system = dynamic_trust_result.debug_planning.simulation.included
 
-        changeRes['change']['in system after change'] = []
-
-        for service in afterChange[1]:
-            changeRes['change']['in system after change'].append(
-                {'name': service[0]['name'], 'satisfaction': service[1]})
-
-        results['changes'].append(changeRes)
-
-        tmp_system = afterChange[1]
-
-    return results
+        change_objs.append(change_obj)
+    result['changes'] = change_objs
+    return result

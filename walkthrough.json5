@@ -1,0 +1,261 @@
+{
+  "included": [
+    {
+      "name": "s_brazil",
+      "trust_value": 0.6666666666666666,
+      "action": 1
+    },
+    {
+      "name": "s_chile",
+      "trust_value": 0.6666666666666666,
+      "action": 0
+    },
+    {
+      "name": "s_france",
+      "trust_value": 0.6666666666666666,
+      "action": 0
+    },
+    {
+      "name": "s_mexico",
+      "trust_value": 0.6666666666666666,
+      "action": 1
+    },
+    {
+      "name": "s_poland",
+      "trust_value": 0.6666666666666666,
+      "action": 1
+    },
+    {
+      "name": "s_romania",
+      "trust_value": 1.0,
+      "action": 1
+    }
+  ],
+  "excluded": [
+    {
+      "name": "s_italy",
+      "trust_value": 0.3333333333333333,
+      "action": -1
+    }
+  ],
+  "changes": [
+    {
+      "index": 0,
+      "changed": {
+        "service_name": "s_chile",
+        "trust_attributes": [
+          {
+            "attribute_index": 2,
+            "new_value": "EEU"
+          }
+        ]
+      },
+      "relevant": true,
+      "metrics": {
+        "application_stability": 1.0,
+        "service_stability": 0.8333333333333334,
+        "action_stability": 0.8333333333333334
+      },
+      "planning": {
+        "decision": "KEEP",
+        "scenario_keep": {
+          "services_to_remove": [],
+          "services_to_update": [
+            {
+              "name": "s_mexico",
+              "trust_value": 0.3333333333333333,
+              "action": 0
+            }
+          ]
+        },
+        "scenario_evict": {
+          "services_to_remove": [],
+          "services_to_update": [
+            {
+              "name": "s_mexico",
+              "trust_value": 0.3333333333333333,
+              "action": 0
+            }
+          ]
+        }
+      },
+      "after_change": {
+        "included": [
+          {
+            "name": "s_brazil",
+            "trust_value": 0.6666666666666666,
+            "action": 1
+          },
+          {
+            "name": "s_chile",
+            "trust_value": 0.6666666666666666,
+            "action": 0
+          },
+          {
+            "name": "s_france",
+            "trust_value": 0.6666666666666666,
+            "action": 0
+          },
+          {
+            "name": "s_mexico",
+            "trust_value": 0.3333333333333333,
+            "action": 0
+          },
+          {
+            "name": "s_poland",
+            "trust_value": 0.6666666666666666,
+            "action": 1
+          },
+          {
+            "name": "s_romania",
+            "trust_value": 1.0,
+            "action": 1
+          }
+        ],
+        "excluded": []
+      }
+    },
+    {
+      "index": 1,
+      "changed": {
+        "service_name": "s_romania",
+        "trust_attributes": [
+          {
+            "attribute_index": 1,
+            "new_value": 15
+          }
+        ]
+      },
+      "relevant": true,
+      "metrics": {
+        "application_stability": 0.8333333333333334,
+        "service_stability": 1.0,
+        "action_stability": 0.8333333333333334
+      },
+      "planning": {
+        "decision": "EVICT",
+        "scenario_keep": {
+          "services_to_remove": [
+            {
+              "name": "s_brazil",
+              "trust_value": 0.3333333333333333,
+              "action": -1
+            },
+            {
+              "name": "s_mexico",
+              "trust_value": 0,
+              "action": -1
+            }
+          ],
+          "services_to_update": []
+        },
+        "scenario_evict": {
+          "services_to_remove": [],
+          "services_to_update": []
+        }
+      },
+      "after_change": {
+        "included": [
+          {
+            "name": "s_brazil",
+            "trust_value": 0.6666666666666666,
+            "action": 1
+          },
+          {
+            "name": "s_chile",
+            "trust_value": 0.6666666666666666,
+            "action": 0
+          },
+          {
+            "name": "s_france",
+            "trust_value": 0.6666666666666666,
+            "action": 0
+          },
+          {
+            "name": "s_mexico",
+            "trust_value": 0.3333333333333333,
+            "action": 0
+          },
+          {
+            "name": "s_poland",
+            "trust_value": 0.6666666666666666,
+            "action": 1
+          }
+        ],
+        "excluded": []
+      }
+    },
+    {
+      "index": 2,
+      "changed": {
+        "service_name": "s_poland",
+        "trust_attributes": [
+          {
+            "attribute_index": 0,
+            "new_value": "urban"
+          }
+        ]
+      },
+      "relevant": true,
+      "metrics": {
+        "application_stability": 0.8,
+        "service_stability": 1.0,
+        "action_stability": 0.8
+      },
+      "planning": {
+        "decision": "KEEP",
+        "scenario_keep": {
+          "services_to_remove": [
+            {
+              "name": "s_france",
+              "trust_value": 0.3333333333333333,
+              "action": -1
+            }
+          ],
+          "services_to_update": []
+        },
+        "scenario_evict": {
+          "services_to_remove": [
+            {
+              "name": "s_france",
+              "trust_value": 0.3333333333333333,
+              "action": -1
+            }
+          ],
+          "services_to_update": []
+        }
+      },
+      "after_change": {
+        "included": [
+          {
+            "name": "s_brazil",
+            "trust_value": 0.6666666666666666,
+            "action": 1
+          },
+          {
+            "name": "s_chile",
+            "trust_value": 0.6666666666666666,
+            "action": 0
+          },
+          {
+            "name": "s_mexico",
+            "trust_value": 0.3333333333333333,
+            "action": 0
+          },
+          {
+            "name": "s_poland",
+            "trust_value": 0.6666666666666666,
+            "action": 1
+          }
+        ],
+        "excluded": [
+          {
+            "name": "s_france",
+            "trust_value": 0.3333333333333333,
+            "action": -1
+          }
+        ]
+      }
+    }
+  ]
+}

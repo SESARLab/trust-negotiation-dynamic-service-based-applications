@@ -1,171 +1,168 @@
-import typing
+from pathlib import Path
 
-import pandas as pd
+import polars as pl
 
 
-def compress_performance(input_file: str, performance_type: str, base_output_directory: str):
-    if performance_type not in RESULT_TYPES:
-        raise ValueError(f'performance_type must be one equal to {RESULT_TYPES}, got: {performance_type}')
+def aggregate_by_setting_level(
+        input_file: Path,
+        output_file: Path,
+        output_cols: list[str],
+        levels: list[int]) -> None:
+    # read the input
+    df = pl.read_csv(input_file)
 
-    df = pd.read_csv(input_file)
+    # "build the settings we're interested in.
+    df = df.with_columns(
+        extract_setting_level(
+            pl.col("setting_name"), levels,
+        ).alias("setting_group")
+    )
 
-    headers_to_group = [
-        (['SERVICES', 'SERVICE_DATA'], f'performance_{performance_type}_service_first'),
-        (['SERVICE_DATA', 'SERVICES'], f'performance_{performance_type}_servicedata_first')
+    # build the result by doing the appropriate group by.
+    result = (
+        df
+        .group_by("setting_group")
+        .agg(
+            *[
+                pl.col(col).mean().alias(f"avg_{col}")
+                for col in output_cols  # pick only the cols we're interested in.
+            ],
+            *[
+                pl.col(col).std().alias(f"std_{col}")
+                for col in output_cols
+            ],
+        )
+        .sort("setting_group")
+    )
+
+    result.write_csv(output_file)
+
+
+def pivot_on_metric(
+        input_file: Path,
+        output_file_pre: Path,
+        target_col: str,
+        filters: list[tuple[str, list[str]]] | None = None):
+    df = pl.read_csv(input_file)
+    # do the filter if any.
+    if filters:
+        for col, values in filters:
+            df = df.filter(pl.col(col).is_in(values))
+
+    groping_cols = ['n_services', 'n_trust_attributes']
+    # we do a different pivot for each pair of headers.
+    aggregated = df.group_by(groping_cols).agg(
+        pl.col(target_col).mean().alias(f'avg_{target_col}'),
+        pl.col(target_col).std().alias(f'std_{target_col}'),
+    )
+
+    # then, we do the pivot for 'n_services', first, and 'n_trust_attributes', second.
+    # we need to do two pivots because pivoting works with one target col only. Then we unite.
+    # The 'index' is what remains left, while the 'on' is the column that gets 'repeated'.
+    pivoting_cols = [
+        ['n_trust_attributes', 'n_services', 'ns'],
+        ['n_services', 'n_trust_attributes', 'na'],
     ]
+    for pivot_on, pivot_index, file_suffix in pivoting_cols:
+        avg = pivot_and_rename(aggregated, pivot_index, pivot_on, target_col, col_prefix='avg')
+        std = pivot_and_rename(aggregated, pivot_index, pivot_on, target_col, col_prefix='std')
 
-    for header, base_name in headers_to_group:
-        if performance_type == RESULT_TYPE_NEGOTIATION:
-            columns_to_drop = ['MIN', 'MAX', 'STD']
-        else:
-            columns_to_drop = [col for col in df.columns if 'STD' in col or 'MAX' in col or 'MIN' in col]
-        grouped = df.groupby(header).mean(numeric_only=True).drop(columns_to_drop, axis='columns')
-        # let's move the multi-index to multiple column, so it is easier to plot.
-        grouped = grouped.unstack(level=-1)
-        # now, we have a multi-level column to be flattened. Let's do it.
-        grouped.columns = grouped.columns.to_flat_index()
-        # now, the name of the columns is like services, (avg, 10), (avg, 20), etc.
-        # Let's "aggregate" the column names. Note that the first column is actually the index,
-        # so we just have to wrap the tuple.
-        grouped = grouped.rename(lambda col: f'{col[0]}_{col[1]}', axis='columns')
-        grouped.to_csv(f'{base_output_directory}/{base_name}.csv', index=True)
+        result = avg.join(std, on=pivot_index).sort(pivot_index)
+        # now, just save.
+        result.write_csv(output_file_pre.with_name(output_file_pre.name + f'_{file_suffix}.csv'))
 
 
-def compress(input_files: typing.List[str], base_output_directory: str, prefix: str = '',
-             columns_to_remove: typing.Optional[typing.List[str]] = None,
-             drop_std: bool = False):
-    # one DataFrame under the other
-    df = pd.concat([pd.read_csv(f) for f in input_files])
-
-    # let's first drop columns if necessary
-    # If we are asked to remove STD-related columns, we add those columns to the list of columns to drop.
-    if drop_std:
-        to_drop = list(filter(lambda col: 'STD' in col, df.columns))
-        columns_to_remove = to_drop if columns_to_remove is None else columns_to_remove + to_drop
-
-    if columns_to_remove is not None and len(columns_to_remove) > 0:
-        df = df.drop(columns_to_remove, axis='columns')
-
-    # map between the headers to be used in group by and the name to use in output
-    headers_to_group = [
-        (['SERVICES', 'SERVICE_DATA'], f'{prefix}_service_first'),
-        (['SERVICE_DATA', 'SERVICES'], f'{prefix}_servicedata_first')
-    ]
-    for header, base_name in headers_to_group:
-        # compute the mean and retrieve avg only.
-        grouped = df.groupby(header).mean(numeric_only=True)
-
-        # let's move the multi-index to multiple column, so it is easier to plot.
-        grouped = grouped.unstack(level=-1)
-        # now, we have a multi-level column to be flattened. Let's do it.
-        grouped.columns = grouped.columns.to_flat_index()
-        # now, the name of the columns is like (col_name, 10), (col_name, 20), etc.,
-        # where "col_name" is the col_name and 10 is the value we are grouping.
-        # Let's join the column names from tuples to string.
-        # Note that the first column is actually the index, so we just have to wrap the tuple.
-        grouped = grouped.rename(lambda col: f'{col[0]}_{col[1]}', axis='columns')
-        grouped.to_csv(f'{base_output_directory}/{base_name}.csv', index=True)
+def pivot_and_rename(df: pl.DataFrame, pivot_index: str, pivot_on: str, target_col: str,
+                     col_prefix: str) -> pl.DataFrame:
+    pivoted = df.pivot(on=pivot_on, index=pivot_index, values=f'{col_prefix}_{target_col}')
+    # sort by columns.
+    value_cols = sorted((c for c in pivoted.columns if c != pivot_index), key=int, )
+    pivoted = pivoted.select([pivot_index, *value_cols])
+    # then, we rename the columns using the format avg_{target_col}_{col}
+    pivoted = pivoted.rename({c: f'{col_prefix}_{target_col}_{c}' for c in value_cols})
+    return pivoted
 
 
-def group_func_group_change(setting: str) -> str:
+def extract_setting_level(
+        expr: pl.Expr,
+        levels: list[int],
+) -> pl.Expr:
     """
+    Helper to extract a setting group from a setting column.
 
-    Examples
-    -------
-    >>> setting_name = 'G2.3.3'
-    >>> group_func_group_change(setting_name)
-    ... 'G2.3.X'
+    The parameter tells which levels in the settings should be considered.
+
+    Example assuming 'G1.1.1'.
+    >>> extract_setting_level(pl.col('setting'), [0, 1])
+    'G1.1.*'
+    >>> extract_setting_level(pl.col('setting'), [2])
+    'G*.*.1'
+    >>> extract_setting_level(pl.col('setting'), [0, 2])
+    'G1.*.1'
     """
-    parts = setting.split('.')
-    if len(parts) != 3:
-        raise ValueError(f'Split on {setting} failed, got {parts}')
-    # join all parts but the last one.
-    rejoined = '.'.join(parts[:-1])
-    # and add 'X' add the end.
-    return f'{rejoined}.X'
+    return (
+        expr
+        .str.split('.')
+        .list.gather(levels)
+        .list.join('.')
+    )
 
 
-def group_func_group_basic(setting: str) -> str:
-    """
-
-    Examples
-    -------
-    >>> setting_name = 'G2.3.3'
-    >>> group_func_group_basic(setting_name)
-    ... 'GX.X.X'
-    """
-    parts = setting.split('.')
-    if len(parts) != 3:
-        raise ValueError(f'Split on {setting} failed, got {parts}')
-    return f'GX.X.{parts[-1]}'
+import argparse
 
 
-def average(input_file: str, grouping_func, output_file: str, drop_std: bool = False):
-    # first we read the cvs file.
-    df = pd.read_csv(input_file)
-    # rename the first column which is unnamed because it is an index (when it has been exported)
-    df = df.rename({'Unnamed: 0': 'Setting'}, axis='columns')
-    # this seems very complicated, but actually we just change the value of the "Setting" column using group.
-    df = df.apply(lambda row: pd.Series(
-        [grouping_func(setting=row['Setting'])] + [row[k] for k in row.index if k != 'Setting'],
-        index=row.index), axis='columns')
-    # now, we just group and we are almost done.
-    # NOTE: reset_index move the group-by index to the first column
-    grouped = df.groupby('Setting').mean().reset_index()
-    if drop_std:
-        to_drop = list(filter(lambda col: 'STD' in col, df.columns))
-        grouped = grouped.drop(to_drop, axis='columns')
-
-    grouped.to_csv(output_file, index=False)
-
-
-if __name__ == '__main__':
-    import argparse
-
+def main():
     parser = argparse.ArgumentParser()
-    sub_parsers = parser.add_subparsers()
+    subparsers = parser.add_subparsers(dest='command', required=True, )
 
-    RESULT_TYPE_NEGOTIATION = 'negotiation'
-    RESULT_TYPE_DYNAMIC = 'dynamic'
-    RESULT_TYPES = [RESULT_TYPE_NEGOTIATION, RESULT_TYPE_DYNAMIC]
+    filter_pivot_parser = subparsers.add_parser('filter-pivot',
+                                                help='Filter rows and generate a pivoted summary table.', )
+    filter_pivot_parser.add_argument('--input-file', type=str, required=True)
+    filter_pivot_parser.add_argument('--output-file', type=str, required=True)
+    filter_pivot_parser.add_argument('--target-col', type=str, required=True,
+                                     help='Target column name.')
+    filter_pivot_parser.add_argument('--filter', action='append', default=[],
+                                     help='Filter on columns of the form col-name=<val1><valn>. Vals are in OR.')
+    filter_pivot_parser.set_defaults(func=cmd_pivot_on_metric)
 
-    parser_compress_performance = sub_parsers.add_parser('compress-performance')
-    parser_compress_performance.add_argument('--base-output-directory', required=True, type=str)
-    parser_compress_performance.add_argument('--input-file', required=True, type=str)
-    parser_compress_performance.add_argument('--mode', choices=RESULT_TYPES, required=True, type=str)
-    parser_compress_performance.set_defaults(func=lambda args_: compress_performance(
-        input_file=args_.input_file,
-        base_output_directory=args_.base_output_directory,
-        performance_type=args_.mode
-    ))
-
-    parser_compress_quality = sub_parsers.add_parser('compress-quality')
-    parser_compress_quality.add_argument('--base-output-directory', required=True, type=str)
-    parser_compress_quality.add_argument('--input-files', required=True, nargs='*', type=str)
-    parser_compress_quality.add_argument('--prefix', required=False, type=str)
-    parser_compress_quality.add_argument('--columns-to-remove', nargs='*', required=False, type=str)
-    parser_compress_quality.add_argument('--drop-std', required=False, type=bool)
-    parser_compress_quality.set_defaults(func=lambda args_: compress(
-        input_files=args_.input_files,
-        prefix=args.prefix,
-        columns_to_remove=args.columns_to_remove,
-        drop_std=args.drop_std,
-        base_output_directory=args_.base_output_directory,
-    ))
-
-    parser_compress_average = sub_parsers.add_parser('compress-average')
-    parser_compress_average.add_argument('--input-file', required=True, type=str)
-    parser_compress_average.add_argument('--output-file', required=True, type=str)
-    parser_compress_average.add_argument('--drop-std', required=False, type=bool)
-    parser_compress_average.add_argument('--mode', choices=RESULT_TYPES, required=True,
-                                         type=str)
-    parser_compress_average.set_defaults(func=lambda args_: average(
-        input_file=args_.input_file,
-        output_file=args_.output_file,
-        drop_std=args.drop_std,
-        grouping_func=group_func_group_change if args.mode == RESULT_TYPE_NEGOTIATION
-        else group_func_group_basic
-    ))
+    aggregate_parser = subparsers.add_parser("aggregate-setting-level",
+                                             help="Aggregate metrics on selected setting levels.",
+                                             )
+    aggregate_parser.add_argument("--input-file", type=str, required=True, )
+    aggregate_parser.add_argument("--output-file", type=str, required=True, )
+    aggregate_parser.add_argument("--output-cols", nargs="+", required=True, )
+    aggregate_parser.add_argument("--levels", nargs="+", required=True, )
+    aggregate_parser.set_defaults(func=cmd_aggregate_by_setting_level, )
 
     args = parser.parse_args()
     args.func(args)
+
+
+def cmd_pivot_on_metric(args) -> None:
+    filters = None
+
+    if args.filter:
+        filters = []
+        for f in args.filter:
+            col, values = f.split('=', 1)
+            filters.append((col, values.split(',')))
+
+    pivot_on_metric(
+        input_file=Path(args.input_file),
+        output_file_pre=Path(args.output_file),
+        target_col=args.target_col,
+        filters=filters,
+    )
+
+
+def cmd_aggregate_by_setting_level(args) -> None:
+    aggregate_by_setting_level(
+        input_file=Path(args.input_file),
+        output_file=Path(args.output_file),
+        output_cols=args.output_cols,
+        levels=[int(x) for x in args.levels],
+    )
+
+
+if __name__ == '__main__':
+    main()

@@ -1,61 +1,58 @@
-python experiments.py --output-dir $BASE_OUTPUT_DIR
+python main.py --output-dir $DEST_DIR
 
-mkdir $BASE_OUTPUT_DIR/post
+# walkthrough.
+python walkthrough.py > $DEST_DIR/walkthrough.json5
 
-# quality negotiation for the worst case of G2.3.X.
-python utils.py \
-    compress-quality \
-    --base-output-directory $BASE_OUTPUT_DIR/post \
-    --input-files $BASE_OUTPUT_DIR/quality/raw_results/negotiation/raw_results_G2.3.1.csv \
-   $BASE_OUTPUT_DIR/quality/raw_results/negotiation/raw_results_G2.3.2.csv \
-    $BASE_OUTPUT_DIR//quality/raw_results/negotiation/raw_results_G2.3.3.csv \
-    --prefix quality_negotiation_G2.3.X_ \
-    --drop-std true
+# post-processing
+mkdir $DEST_DIR/03_post
 
-# quality dynamic trust for the worst case of GX.X.3.
-python utils.py \
-    compress-quality \
-    --base-output-directory $BASE_OUTPUT_DIR/post \
-    --input-files \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G1.2.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G1.3.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G2.1.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G2.2.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G2.3.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G3.1.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G3.2.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G3.3.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G4.1.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G4.2.3.csv \
-    $BASE_OUTPUT_DIR/quality/raw_results/dynamic_trust/raw_results_G4.3.3.csv \
-    --prefix quality_dynamic_GX.X.3_ \
-    --drop-std true
+# negotiation - success rate over settings G2.3.*
+python utils.py filter-pivot \
+  --input-file $DEST_DIR/01_quality/02_agg1_results.csv \
+  --output-file $DEST_DIR/03_post/sensitivity_G2.3.X \
+  --filter setting_name=G2.3.1,G2.3.2,G2.3.3 \
+  --target-col avg_negotiation_success_rate
 
 
-# performance dynamic trust
-python utils.py compress-performance \
-	--mode dynamic \
-	--base-output-directory $BASE_OUTPUT_DIR/post \
-	--input-file $BASE_OUTPUT_DIR/performance/dynamic_trust/results.csv
-		
-# performance negotiation
-python utils.py compress-performance \
-    --mode negotiation \
-    --base-output-directory $BASE_OUTPUT_DIR/post \
-    --input-file $BASE_OUTPUT_DIR/performance/negotiation/results.csv
+# negotiation - success rate, success rate SOTA
+# note that for SOTA1 and 3 we export just one
+# metrics 'cause everything is 0 and that's it.
+python utils.py aggregate-setting-level \
+  --input-file $DEST_DIR/01_quality/01_agg2_results.csv \
+  --output-file $DEST_DIR/03_post/quality_neg_comparison.csv \
+  --levels 0 1 \
+  --output-cols \
+    avg_avg_negotiation_success_rate \
+    avg_avg_trust_value \
+    avg_avg_sota1_success_rate \
+    avg_avg_sota2_success_rate \
+    avg_avg_sota2_trust_value \
+    avg_avg_sota2_unsupported_service_rate \
+    avg_avg_sota2_requirement_violation_rate \
+    avg_avg_sota3_success_rate
 
-# compress negotiation (for tables)
-python utils.py \
-    compress-average \
-    --input-file $BASE_OUTPUT_DIR/quality/elaborated_results/negotiation_results.csv \
-    --output-file $BASE_OUTPUT_DIR/post/negotiation_results.csv \
-    --mode negotiation \
-    --drop-std true
 
-# compress dynamic trust (for tables)
-python utils.py \
-    compress-average \
-    --input-file $BASE_OUTPUT_DIR/quality/elaborated_results/dynamic_trust_results.csv \
-    --output-file $BASE_OUTPUT_DIR/post/dynamic_trust_results.csv \
-    --mode dynamic \
-    --drop-std true
+# dynamic trust - quality
+python utils2.py aggregate-setting-level \
+  --input-file $DEST_DIR/01_quality/01_agg2_results.csv \
+  --output-file $DEST_DIR/03_post/quality_dyn_comparison.csv \
+  --levels 2 \
+  --output-cols \
+    avg_avg_global_application_stability \
+    avg_avg_global_service_stability
+
+
+# performance - negotiation
+python utils2.py filter-pivot \
+  --input-file $DEST_DIR/02_performance/performance.csv \
+  --output-file $DEST_DIR/03_post/performance_01neg_G2.3.X_G.4.2.X \
+  --filter setting_name=G2.3.1,G2.3.2,G2.3.3,G4.2.1,G4.2.2,G4.2.3 \
+  --target-col negotiation_avg
+
+# performance - dynamic trust
+python utils2.py filter-pivot \
+  --input-file $DEST_DIR/02_performance/performance.csv \
+  --output-file $DEST_DIR/03_post/performance_02dyn_G2.3.X_G.4.2.X \
+  --filter setting_name=G2.3.1,G2.3.2,G2.3.3,G4.2.1,G4.2.2,G4.2.3 \
+  --target-col dynamic_trust_avg
+

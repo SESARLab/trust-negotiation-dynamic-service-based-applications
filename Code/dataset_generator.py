@@ -1,158 +1,144 @@
-#!/bin/python3
+from dataclasses import dataclass
 
-import const
-import sys
 import numpy as np
-import pandas as pd
-from joblib import Parallel, delayed
+
+from model import (
+    Service,
+    TrustAttribute,
+    TrustRequirement, ChangeSet, TrustAttributeChange, Policy,
+)
+from settings_data import POLICY_LOOSE, POLICY_STRICT, TRUST_ATTRIBUTE_VALUE_BAD, TRUST_ATTRIBUTE_VALUE_AVG, \
+    TRUST_ATTRIBUTE_VALUE_GOOD, TRUST_REQUIREMENT_BAD_AVG, TRUST_REQUIREMENT_AVG_GOOD, TRUST_REQUIREMENT_BAD_GOOD, \
+    ALL_TRUST_ATTRIBUTE_VALUES
+from settings_model import ExperimentSetting, Cardinality
 
 
-def generateTrustData(probabilities: list[float]) -> (int, bool):
-    """
-        Function that generates a service data value (according to probabilities) 
-    """
+@dataclass
+class ExperimentalDataset:
+    services: list[Service]
 
-    return (
-        np.random.default_rng().choice(
-            [const.SD_VALUE['BAD'], const.SD_VALUE['AVG'], const.SD_VALUE['GOOD']],
-            p = probabilities
-        ),
-        np.random.default_rng().choice(
-            [True, False],
-            p = [0.5, 0.5]
-        )
-    )
-
-
-def generateRequirement(val_probabilities: list[float], card_probabilities: list[float]) -> tuple[list[int], int, bool]:
-    """
-        Function that generates a tuple containing: range of accepted value (according to val_probabilities), and cardinality (according to card_probabilities)  
-    """
-
-    return (
-        [
-            np.random.default_rng().choice(
-                [const.SD_VALUE['BAD'], const.SD_VALUE['AVG'], const.SD_VALUE['GOOD']],
-                p=val_probabilities
-            ),
-            const.SD_VALUE['GOOD']  # to represent an open range [x, +inf), the second value is the maximum
-        ],
-        np.random.default_rng().choice(
-            [const.REQ_CARDINALITY['EXISTS'], const.REQ_CARDINALITY['FORALL']],
-            p=card_probabilities
-        ),
-        np.random.default_rng().choice(
-            [True, False],
-            p=[0.5, 0.5]
-        )
-    )
-
-
-def generatePolicy(probabilities: list[float]) -> list[float]:
-    """
-        Function that generate a list of float (according to probabilities) representing: 
-         - list[0] the minimum satisfaction to join
-         - list[1] the minimum satisfaction to perform the best action 
-    """
-
-    return np.random.default_rng().choice(
-        [const.POLICIES['LOOSE'], const.POLICIES['STRICT']],
-        p=probabilities
-    ).tolist()
-
-def generateNumberOfChangingServices(service_num: int, probabilities: list[float]) -> int:
-    """
-        Function to generate the number of changing service:
-         - in a loop on each service, we decide if a service change or not with probabilities p
-    """
-
-    count = 0
-
-    for i in range(service_num):
-        if np.random.default_rng().choice([True, False], p = probabilities):
-            count += 1
-
-    return count
-
-def generateChangingServices(service_num: int, change_num: int) -> list[int]:
-    """ 
-        Function that generate a list of n different random services on which to make changes  
-    """
-
-    return (np.arange(0, service_num)[np.random.choice(service_num, size=change_num, replace=False)]).tolist()
-
-def generateNumberOfChangingSds(sds_num: int, probabilities: list[float]) -> int:
-    """
-        Function to generate the number of changing service:
-         - in a loop on each sd, we decide if a sd change or not with probabilities p
-    """
-
-    count = 0
-
-    for i in range(sds_num):
-        if np.random.default_rng().choice([True, False], p = probabilities): 
-            count += 1
-
-    return count
-
-def generateChangingSds(sds_num: int, change_num: int) -> list[int]:
-    """ 
-        Function that generate a list of n different random services on which to make changes  
-    """
-
-    return (np.arange(0, sds_num)[np.random.choice(sds_num, size=change_num, replace=False)]).tolist()
-
-def generateChange(service: dict, changing_sds: list[int]) -> list[(str, int)]:
-    changes = []
-
-    for csd in changing_sds: 
-        ch_type = np.random.default_rng().choice(
-            [const.CHANGE['IMPROVING'], const.CHANGE['WORSENING']],
-            p = [0.5, 0.5]
-        )
-
-        if ch_type == const.CHANGE['IMPROVING']:
-            if service[f'sd{csd}'][0] < const.SD_VALUE['GOOD']:
-                changes.append((f'sd{csd}', service[f'sd{csd}'][0] + 1))
-        else:
-            if service[f'sd{csd}'][0] > const.SD_VALUE['BAD']:
-                changes.append((f'sd{csd}', service[f'sd{csd}'][0] - 1))
-
-    return changes  # [('sd_n', newval), ....]
-
-def generateService(index: int, sds_num: int, sd_probabilities: list[float], r_val_probabilities: list[float],
-                 r_card_probabilities: list[float], r_pol_probabilities: list[float]) -> dict:
-    service = {}
-
-    service['name'] = f'service{index}'
-
-    for sd_num in range(sds_num):
-        service[f'sd{sd_num}'] = generateTrustData(sd_probabilities)
-        service[f'req{sd_num}'] = generateRequirement(r_val_probabilities, r_card_probabilities)
-
-    service['policy'] = generatePolicy(r_pol_probabilities)
-    service['change'] = []
-
-    return service
 
 class DatasetGenerator:
-    def __init__(self, setting: list[dict]):
+
+    def __init__(self, setting: ExperimentSetting):
         self.setting = setting
+        self.rng = np.random.default_rng()
 
-    def generate(self, services_num: int, sds_num: int, filename: str):
-        # generate services
-        services = Parallel(n_jobs=-1)(
-            delayed(generateService)(i, sds_num, self.setting['SD_P'], self.setting['REQS_P']['REQUIREMENTS'],
-                                  self.setting['REQS_P']['CARDINALITY'], self.setting['REQS_P']['POLICY']) for i in
-            range(services_num))
+    def _generate_attribute(self) -> TrustAttribute:
+        return TrustAttribute(
+            value=self.rng.choice(
+                [
+                    TRUST_ATTRIBUTE_VALUE_BAD,
+                    TRUST_ATTRIBUTE_VALUE_AVG,
+                    TRUST_ATTRIBUTE_VALUE_GOOD,
+                ],
+                p=[self.setting.profile.bad_probability,
+                   self.setting.profile.avg_probability,
+                   self.setting.profile.good_probability]),
+            is_certified=self.rng.choice(
+                [True, False],
+                p=[0.5, 0.5]
+            )
+        )
 
-        # generate indexes 
-        indexes = np.arange(0, services_num, dtype=int).tolist()
+    def _generate_requirement(self) -> TrustRequirement:
+        return TrustRequirement(
+            range=self.rng.choice(
+                    [
+                        TRUST_REQUIREMENT_BAD_AVG,
+                        TRUST_REQUIREMENT_AVG_GOOD,
+                        TRUST_REQUIREMENT_BAD_GOOD,
+                    ],
+                    p=[
+                        self.setting.requirements.requirement_probabilities.proba_bad_avg,
+                        self.setting.requirements.requirement_probabilities.proba_avg_good,
+                        self.setting.requirements.requirement_probabilities.proba_bad_good
+                    ]
+                ),
+            cardinality=Cardinality(self.rng.choice(
+                [Cardinality.EXISTS.value, Cardinality.FORALL.value],
+                p=[
+                    self.setting.requirements.cardinality_probabilities.exists_probability,
+                    self.setting.requirements.cardinality_probabilities.forall_probability
+                ]
+            )),
+            is_certified=self.rng.choice([True, False], p=[0.5, 0.5])
+        )
 
-        # create dataframe and export it 
-        df = pd.DataFrame(services)
-        df.index = indexes
-        df.index.name = 'service'
-        df.insert(0, 'setting', self.setting['SETTING_NAME'])
+    def _generate_policy(self) -> Policy:
+        return self.rng.choice(
+            [POLICY_LOOSE, POLICY_STRICT],
+            p=self.setting.requirements.policy_probabilities
+        )
 
-        df.to_csv(filename)
+    def _generate_service(self, index: int, attributes_num: int) -> Service:
+        attributes = [
+            self._generate_attribute()
+            for _ in range(attributes_num)
+        ]
+
+        requirements = [
+            self._generate_requirement()
+            for _ in range(attributes_num)
+        ]
+
+        return Service(
+            name=f's{index}',
+            policy=self._generate_policy(),
+            attributes=attributes,
+            requirements=requirements
+        )
+
+    def generate(self, n_services: int, n_trust_attributes: int) -> ExperimentalDataset:
+        """
+        Generate a dataset with the set of services.
+        """
+        services = [
+            self._generate_service(
+                index=i,
+                attributes_num=n_trust_attributes
+            )
+            for i in range(n_services)
+        ]
+
+        return ExperimentalDataset(
+            services=services
+        )
+
+    def generate_change_set(self, service: Service) -> ChangeSet:
+        """
+        Generate *one* change set for this service.
+        """
+        changes = []
+
+        while len(changes) == 0:
+            # for every attribute of the service, we determine whether it participates
+            for i, attribute in enumerate(service.attributes):
+                participates = self.rng.choice(
+                        [True, False],
+                        p=[self.setting.changes.attribute_probability,
+                           1 - self.setting.changes.attribute_probability]
+                    )
+                if not participates:
+                    continue
+                # else, determines its new value.
+                possible_values = [value for value in ALL_TRUST_ATTRIBUTE_VALUES if value != attribute.value]
+                new_value = self.rng.choice(possible_values)
+                changes.append(
+                    TrustAttributeChange(
+                        index=i,
+                        new_value=int(new_value), # otherwise it's np.int64 and things get messed up
+                    )
+                )
+
+        return ChangeSet(changes=tuple(changes))
+
+    def change_occurs(self) -> bool:
+        return self.rng.choice([True, False],
+                               p=[
+                                   self.setting.changes.event_probability,
+                                  1-self.setting.changes.event_probability
+                               ])
+
+    def choose_changed_service(self, system: list[Service]) -> int:
+        return self.rng.choice(len(system))
